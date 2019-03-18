@@ -1,0 +1,250 @@
+class Title extends React.Component {
+	constructor() {
+		super();
+		this.state = {
+			visible:false
+		}
+	
+		this.toggleInfo = this.toggleInfo.bind(this);
+	}
+	
+	toggleInfo() 
+	{
+		this.setState((prevState, props) => {
+		return {visible: !prevState.visible };
+	});
+	}
+	
+	render() {
+	return (<div >
+					<div className="col">
+					<h1 className="text-center">FreeCodeCamp Pomodoro Clock <i className="fa fa-info-circle" aria-hidden="true" onClick={this.toggleInfo}></i></h1>
+					</div>
+					<div className="col info" hidden={!this.state.visible}>
+					<h4 className="text-center"> Click <a target="_blank"href="https://en.wikipedia.org/wiki/Pomodoro_Technique">here</a> to go to Wikipedia</h4>
+					</div>
+					</div>
+				 )};
+}
+
+class Background extends React.Component {
+
+	render() {
+		
+		const divStyle = {
+     color: 'blue',
+		 height: this.props.percentage,
+     backgroundColor: this.props.state ? 'rgba(124,252,0,0.7)' : 'rgba(255,160,122,0.7)'
+};
+		return (<div style= {divStyle} className="background"></div>);
+	}
+}
+
+function Timer(props) {
+	return (<div>
+					<h1>{props.minutes}:{props.seconds< 10 ? 0 : ""}{props.seconds}</h1>
+					<h4>{props.name}</h4>
+					</div>);
+}
+
+class Buttons extends React.Component {
+	
+	onInput() {
+    var breakInput = document.getElementById("breakInput");
+		var sessionInput = document.getElementById("sessionInput");
+    var currentVal = input.value;
+    this.setState({
+      value: currentVal
+    })
+}
+	
+	render() {
+		return (<div class="btn-group" role="group">
+						<button className="btn btn-primary" type="button" onClick={this.props.startTimer}>Start</button>
+						<button className="btn btn-warning" type="button" onClick={this.props.stopTimer}>Stop</button>
+						<button className="btn btn-danger" type="button" onClick={this.props.resetTimer}>Reset</button>
+					 </div>);
+	}
+}
+
+class Slider extends React.Component {
+	  constructor(props){
+  super(props);
+    this.state = {
+			value: this.props.defaultValue
+    }
+		}
+			
+	onInput() {
+    var input = document.getElementById(this.props.name);
+    var currentVal = input.value;
+		this.props.setTime(currentVal);
+    this.setState({
+      value: currentVal
+    });
+}
+	
+	render() {
+		return (<div>
+						<h4>{this.props.name}</h4>
+						<div className="range-slider">
+						<input id={this.props.name} className="range-slider__range" type="range" min={this.props.min} max={this.props.max} step="1" defaultValue={this.props.defaultValue} onInput={this.onInput.bind(this)}/>
+		<span className="range-slider__value">{this.state.value}</span>
+					 </div>
+		</div>
+		);
+	}
+}
+
+
+class Clock extends React.Component {
+  constructor(){
+  super();
+    this.state = {
+			time: 0,
+			seconds: 0,
+			sessionTime: 25,
+			breakTime: 5,
+			min: 1,
+			max: 30,
+			status: true,
+			intervalId: null,
+			statusName: "Session Time"
+    }
+			
+			this.startTimer = this.startTimer.bind(this);
+			this.stopTimer = this.stopTimer.bind(this);
+			this.resetTimer = this.resetTimer.bind(this);
+		  this.setBreakTime = this.setBreakTime.bind(this);
+		  this.setSessionTime = this.setSessionTime.bind(this);
+			this.getPercentage = this.getPercentage.bind(this);
+      this.countDown = this.countDown.bind(this);
+			this.changeStatus = this.changeStatus.bind(this);
+			this.decrementSeconds = this.decrementSeconds.bind(this);
+  }
+		
+		componentWillMount(){
+    this.setState({time: this.state.sessionTime});
+}
+
+		startTimer() {
+			if(!this.state.intervalId)
+				{
+					this.state.intervalId = setInterval(this.countDown, 1000);
+				} 
+  }
+		stopTimer() {
+			if(this.state.intervalId)
+					clearInterval(this.state.intervalId);
+			
+			this.setState({intervalId: null});
+		}
+	
+	resetTimer() {
+			if(this.state.intervalId)
+					clearInterval(this.state.intervalId);
+			
+			this.setState({
+			time: this.state.sessionTime,
+			seconds: 0,
+			sessionTime: 25,
+			breakTime: 5,
+			min: 1,
+			max: 30,
+			status: true,
+			intervalId: null,
+			statusName: "Session Time"});
+		}
+	
+	setBreakTime(time) {
+		this.setState({
+      breakTime: time
+    });
+		
+		if(!this.state.status) 
+			{
+				this.setState({
+      time: time,
+			seconds: 0
+    });
+			}
+	}
+	
+	setSessionTime(time) {
+		this.setState({sessionTime: time});
+		
+		if(this.state.status) 
+			{
+				this.setState({time: time, seconds: 0
+    });
+			}
+	}
+	
+	countDown(){
+		if(this.state.time == 0 && this.state.seconds == 0)
+			{
+				this.changeStatus();
+			} else
+				{
+					this.decrementSeconds();
+				}
+	}
+	
+	changeStatus() {
+				this.setState((prevState, props) => {
+		return {
+			status: !prevState.status,
+			statusName: !prevState.status ? "Session Time" : "Break Time",
+			time: !prevState.status ? prevState.sessionTime :  prevState.breakTime
+		};
+	});
+	}
+	
+	decrementSeconds() {
+		if(this.state.seconds === 0)
+			{
+				this.setState((prevState, props) => {return {time : prevState.time -1, seconds : 59}});
+			} else 
+				{
+					this.setState((prevState, props) => {return {seconds :prevState.seconds -1}});
+				}
+	}
+	
+	getPercentage() {
+		let maxSeconds = this.state.status ? this.state.sessionTime *60 : this.state.breakTime *60;
+		maxSeconds !== 0 ? maxSeconds : 1;
+	
+		let seconds = ((this.state.time) * 60 ) + this.state.seconds;
+		
+		return 100- (seconds * 100 / maxSeconds) + "%";
+	}
+	
+	
+	render() {
+		return (<div className= "fullWidth">
+						<div className = "row">
+						<div className = "col">
+						<Slider name="Break" min={this.state.min} max={this.state.max} defaultValue = "5" setTime={this.setBreakTime }></Slider>
+						</div>
+						<div className = "col">
+						<Slider name="Session" min={this.state.min} max={this.state.max} defaultValue = "25" setTime={this.setSessionTime }></Slider>
+						</div>
+						</div>
+						<Timer minutes={this.state.time} seconds= {this.state.seconds} name={this.state.statusName}></Timer>
+						<Buttons startTimer ={this.startTimer} stopTimer ={this.stopTimer} resetTimer ={this.resetTimer}></Buttons>
+						<Background state={this.state.status} percentage={this.getPercentage()}></Background>
+						</div>);
+	}
+}
+
+
+ReactDOM.render(
+	
+	<div className="">
+		<Title></Title>
+	<div className="container text-center">
+	<Clock></Clock>
+	</div>
+	</div>,
+  document.getElementById('root')
+);
