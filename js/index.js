@@ -27,7 +27,7 @@ var Title = /** @class */ (function (_super) {
         return (React.createElement("div", null,
             React.createElement("div", { className: "col" },
                 React.createElement("h1", { className: "text-center" },
-                    "FreeCodeCamp Pomodoro Clock ",
+                    "Pomodoro Clock ",
                     React.createElement("i", { className: "fa fa-info-circle", "aria-hidden": "true", onClick: this.toggleInfo }))),
             React.createElement("div", { className: "col info", hidden: !this.state.visible },
                 React.createElement("h4", { className: "text-center" },
